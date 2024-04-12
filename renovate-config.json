@@ -45,17 +45,6 @@
       ]
     },
     {
-      "matchPackageNames": [
-        "php"
-      ],
-      "extends": [
-        ":automergeDisabled",
-        ":automergePr"
-      ],
-      "ignoreUnstable": false,
-      "groupName": "PHP"
-    },
-    {
       "matchDepNames": [
         "php"
       ],
