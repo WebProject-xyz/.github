@@ -11,7 +11,8 @@
     ":automergePr",
     ":automergeRequireAllStatusChecks",
     ":label(dependencies)",
-    ":gitSignOff"
+    ":gitSignOff",
+    ":semanticPrefixChore"
   ],
   "commitBodyTable": true,
   "lockFileMaintenance": {
@@ -65,6 +66,7 @@
     }
   ],
   "vulnerabilityAlerts": {
+    "enabled": true,
     "extends": [
       ":automergeDisabled",
       ":automergePr",
