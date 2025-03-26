@@ -6,13 +6,25 @@
     "fahl-design"
   ],
   "extends": [
-    "local>ocramius/.github:renovate-config",
+    ":dependencyDashboard",
+    ":ignoreModulesAndTests",
+    ":automergeMinor",
+    ":automergeBranch",
+    ":rebaseStalePrs",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    ":enableVulnerabilityAlerts",
+    ":timezone(UTC)",
+    ":label(renovate)",
+    "group:allNonMajor"
+  ],
     "default:automergeBranchPush",
     ":automergePr",
     ":automergeRequireAllStatusChecks",
     ":label(dependencies)",
     ":gitSignOff",
-    ":semanticPrefixChore"
+    ":semanticPrefixChore",
+    ":semanticCommitTypeAll(chore)"
   ],
   "commitBodyTable": true,
   "lockFileMaintenance": {
