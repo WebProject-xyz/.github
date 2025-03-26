@@ -16,8 +16,7 @@
     ":enableVulnerabilityAlerts",
     ":timezone(UTC)",
     ":label(renovate)",
-    "group:allNonMajor"
-  ],
+    "group:allNonMajor",
     "default:automergeBranchPush",
     ":automergePr",
     ":automergeRequireAllStatusChecks",
