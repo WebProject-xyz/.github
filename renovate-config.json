@@ -23,7 +23,8 @@
     ":label(dependencies)",
     ":gitSignOff",
     ":semanticPrefixChore",
-    ":semanticCommitTypeAll(chore)"
+    ":semanticCommitTypeAll(chore)",
+    "helpers:pinGitHubActionDigests"
   ],
   "commitBodyTable": true,
   "lockFileMaintenance": {
@@ -39,6 +40,7 @@
   "prFooter": "[Read more information](https://github.com/WebProject-xyz/.github/blob/main/RENOVATE.md) about the use of [Renovate Bot](https://github.com/renovatebot/renovate).",
   "rangeStrategy": "replace",
   "rollbackPrs": true,
+  "pinDigests": true,
   "packageRules": [
     {
       "rangeStrategy": "bump"
@@ -49,7 +51,7 @@
       ],
       "groupSlug": "symfony",
       "groupName": "Symfony Packages",
-      "automerge": false,
+      "automerge": true,
       "extends": [
         ":automergeDisabled",
         ":automergePr",
@@ -74,6 +76,10 @@
         "docker"
       ],
       "versioning": "semver"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
