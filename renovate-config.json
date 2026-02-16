@@ -9,15 +9,12 @@
     ":dependencyDashboard",
     ":ignoreModulesAndTests",
     ":automergeMinor",
-    ":automergeBranch",
-    ":rebaseStalePrs",
     ":separateMajorReleases",
     ":combinePatchMinorReleases",
     ":enableVulnerabilityAlerts",
     ":timezone(UTC)",
     ":label(renovate)",
     "group:allNonMajor",
-    "default:automergeBranchPush",
     ":automergePr",
     ":automergeRequireAllStatusChecks",
     ":label(dependencies)",
@@ -26,24 +23,54 @@
     ":semanticCommitTypeAll(chore)",
     "helpers:pinGitHubActionDigests"
   ],
+  "rebaseWhen": "behind-base-branch",
+  "automergeType": "pr",
   "commitBodyTable": true,
   "lockFileMaintenance": {
     "enabled": true,
     "extends": [
       "schedule:daily"
     ],
-    "automerge": true,
-    "platformAutomerge": true,
-    "automergeType": "pr"
+    "automerge": true
   },
   "platformAutomerge": true,
   "prFooter": "[Read more information](https://github.com/WebProject-xyz/.github/blob/main/RENOVATE.md) about the use of [Renovate Bot](https://github.com/renovatebot/renovate).",
   "rangeStrategy": "replace",
   "rollbackPrs": true,
   "pinDigests": true,
+  "minimumReleaseAge": "3 days",
+  "composer": {
+    "composerIgnorePlatformReqs": false
+  },
+  "constraints": {
+    "php": "~8.3.0 || ~8.4.0"
+  },
   "packageRules": [
     {
-      "rangeStrategy": "bump"
+      "description": "General automerge for minor and patch updates",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Group all GitHub Action updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "Group PHP development tools",
+      "matchPackagePatterns": [
+        "phpunit/",
+        "phpstan/",
+        "codeception/"
+      ],
+      "groupName": "PHP Dev Tools"
     },
     {
       "matchPackagePatterns": [
@@ -51,10 +78,8 @@
       ],
       "groupSlug": "symfony",
       "groupName": "Symfony Packages",
-      "automerge": true,
+      "automerge": false,
       "extends": [
-        ":automergeDisabled",
-        ":automergePr",
         ":label(Awaiting Maintainer Response)"
       ]
     },
@@ -63,23 +88,18 @@
         "php"
       ],
       "allowedVersions": "~8.3.0 || ~8.4.0",
-      "extends": [
-        ":automergeDisabled",
-        ":automergePr",
-        ":label(Awaiting Maintainer Response)"
-      ],
+      "automerge": false,
       "ignoreUnstable": false,
-      "groupName": "PHP"
+      "groupName": "PHP",
+      "extends": [
+        ":label(Awaiting Maintainer Response)"
+      ]
     },
     {
       "matchDatasources": [
         "docker"
       ],
       "versioning": "semver"
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
