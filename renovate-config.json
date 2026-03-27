@@ -31,7 +31,8 @@
     "extends": [
       "schedule:daily"
     ],
-    "automerge": true
+    "automerge": true,
+    "assignees": []
   },
   "platformAutomerge": true,
   "prFooter": "[Read more information](https://github.com/WebProject-xyz/.github/blob/main/RENOVATE.md) about the use of [Renovate Bot](https://github.com/renovatebot/renovate).",
@@ -57,11 +58,22 @@
       "automerge": true
     },
     {
-      "description": "Group all GitHub Action updates",
+      "description": "Group all GitHub Action updates (no review required)",
       "matchManagers": [
         "github-actions"
       ],
-      "groupName": "GitHub Actions"
+      "groupName": "GitHub Actions",
+      "automerge": true,
+      "assignees": []
+    },
+    {
+      "description": "Pin digest updates (no review required)",
+      "matchUpdateTypes": [
+        "pin",
+        "digest"
+      ],
+      "automerge": true,
+      "assignees": []
     },
     {
       "description": "Group PHP development tools",
