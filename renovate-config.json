@@ -85,15 +85,34 @@
       "groupName": "PHP Dev Tools"
     },
     {
+      "description": "Symfony minor/major: widen range for forward compatibility (e.g. ^7.4 || ^8.0)",
       "matchPackagePatterns": [
         "symfony/"
       ],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
       "groupSlug": "symfony",
       "groupName": "Symfony Packages",
+      "rangeStrategy": "widen",
       "automerge": false,
       "extends": [
         ":label(Awaiting Maintainer Response)"
       ]
+    },
+    {
+      "description": "Symfony patch updates: automerge without review",
+      "matchPackagePatterns": [
+        "symfony/"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupSlug": "symfony-patch",
+      "groupName": "Symfony Packages (patch)",
+      "automerge": true,
+      "assignees": []
     },
     {
       "matchDepNames": [
