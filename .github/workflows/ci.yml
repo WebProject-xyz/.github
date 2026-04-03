@@ -42,6 +42,8 @@ name: "CI"
 
 permissions:
   contents: read
+  actions: read
+  security-events: write
 
 jobs:
   qa:
@@ -95,10 +97,6 @@ jobs:
     name: "Codacy Security Scan"
     if: "${{ inputs.with-codacy && !startsWith(github.event.head_commit.message, 'chore(release)') }}"
     runs-on: "ubuntu-latest"
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
     steps:
       - name: "Checkout"
         uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd" # v6.0.2
@@ -233,9 +231,6 @@ jobs:
     needs:
       - tests
     runs-on: "ubuntu-latest"
-    permissions:
-      actions: read
-      contents: read
     steps:
       - name: "Generate Token"
         id: generate_token
