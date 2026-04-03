@@ -58,9 +58,16 @@
       "automerge": true
     },
     {
-      "description": "Group all GitHub Action updates (no review required)",
+      "description": "Group all GitHub Action updates including major (no review required)",
       "matchManagers": [
         "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "pin",
+        "digest"
       ],
       "groupName": "GitHub Actions",
       "automerge": true,
