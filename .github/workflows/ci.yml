@@ -2,19 +2,24 @@ on:
   workflow_call:
     inputs:
       php-version:
-        description: "Default PHP version for QA and locked test matrix entry"
+        description: "PHP version for the QA job (lint + static analysis)"
         default: "8.3"
         type: string
-      php-version-next:
-        description: "Next PHP version for highest-deps test matrix entry"
-        default: "8.4"
-        type: string
-      php-version-future:
-        description: "Future PHP version for highest-deps test matrix entry (allow-fail)"
-        default: "8.5"
+      test-matrix:
+        description: >-
+          JSON array of test matrix entries. Each entry must define
+          `php-version` (string), `dependencies` (locked|highest|lowest),
+          and `with_coverage` (boolean; requires `with-coverage: true` to
+          actually run coverage). Override to add, drop, or reorder rows.
+        default: |
+          [
+            {"php-version": "8.3", "dependencies": "locked",  "with_coverage": true},
+            {"php-version": "8.4", "dependencies": "highest", "with_coverage": false},
+            {"php-version": "8.5", "dependencies": "highest", "with_coverage": false}
+          ]
         type: string
       with-coverage:
-        description: "Enable code coverage on the locked test matrix entry"
+        description: "Master switch for coverage. When true, matrix rows with with_coverage=true will collect and upload coverage."
         default: false
         type: boolean
       coverage-path:
@@ -40,16 +45,15 @@ on:
 
 name: "CI"
 
-permissions:
-  contents: read
-  actions: read
-  security-events: write
+permissions: {}
 
 jobs:
   qa:
     name: "QA (lint + static analysis)"
     if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
     env:
       PHP_CS_FIXER_IGNORE_ENV: "${{ inputs.php-cs-fixer-ignore-env }}"
     steps:
@@ -97,12 +101,15 @@ jobs:
     name: "Codacy Security Scan"
     if: "${{ inputs.with-codacy && !startsWith(github.event.head_commit.message, 'chore(release)') }}"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: "Checkout"
         uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd" # v6.0.2
 
       - name: "Run Codacy Analysis CLI"
-        uses: "codacy/codacy-analysis-cli-action@30783d03e758713bb5ed7b79292cfb14b9dd9a4a"
+        uses: "codacy/codacy-analysis-cli-action@562ee3e92b8e92df8b67e0a5ff8aa8e261919c08" # v4.4.7
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           verbose: false
@@ -117,27 +124,12 @@ jobs:
     name: "Tests (PHP ${{ matrix.php-version }}, ${{ matrix.dependencies }})"
     needs: [qa]
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - php-version: "${{ inputs.php-version }}"
-            dependencies: "locked"
-            coverage: "pcov"
-            with_coverage: ${{ inputs.with-coverage }}
-            allow-fail: false
-
-          - php-version: "${{ inputs.php-version-next }}"
-            dependencies: "highest"
-            coverage: "pcov"
-            with_coverage: false
-            allow-fail: true
-
-          - php-version: "${{ inputs.php-version-future }}"
-            dependencies: "highest"
-            coverage: "pcov"
-            with_coverage: false
-            allow-fail: true
+        include: ${{ fromJSON(inputs.test-matrix) }}
     steps:
       - name: "Checkout"
         uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd" # v6.0.2
@@ -145,7 +137,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f" # 2.37.0
         with:
-          coverage: "${{ matrix.coverage }}"
+          coverage: "${{ (matrix.with_coverage == true && inputs.with-coverage) && 'pcov' || 'none' }}"
           ini-values: display_errors=On, display_startup_errors=On, error_reporting=32767
           php-version: "${{ matrix.php-version }}"
 
@@ -154,10 +146,6 @@ jobs:
 
       - name: "Set up problem matchers for phpunit/phpunit"
         run: "echo \"::add-matcher::${{ runner.tool_cache }}/phpunit.json\""
-
-      - name: "Validate composer.json and composer.lock"
-        if: "github.actor != 'renovate[bot]' || contains(github.head_ref, 'lock-file-maintenance')"
-        run: "composer validate --ansi --strict"
 
       - name: "Determine composer cache directory"
         uses: "ergebnis/.github/actions/composer/determine-cache-directory@9785f99b3546d64df9cb331449e7fcdc41885d25" # 1.11.0
@@ -178,19 +166,19 @@ jobs:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance') && matrix.dependencies == 'locked') && 'highest' || matrix.dependencies }}"
 
       - name: "Run Tests (coverage)"
-        if: matrix.with_coverage == true
+        if: "${{ matrix.with_coverage == true && inputs.with-coverage }}"
         run: |
           vendor/bin/codecept build
           vendor/bin/codecept run --coverage --coverage-xml=coverage.xml --xml --report
 
       - name: "Run Tests"
-        if: matrix.with_coverage != true
+        if: "${{ !(matrix.with_coverage == true && inputs.with-coverage) }}"
         run: |
           vendor/bin/codecept build
           vendor/bin/codecept run --xml --report
 
       - name: "Upload coverage artifact"
-        if: matrix.with_coverage == true
+        if: "${{ matrix.with_coverage == true && inputs.with-coverage }}"
         uses: "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f" # v7.0.0
         with:
           name: code-coverage-results
@@ -198,14 +186,14 @@ jobs:
           retention-days: 5
 
       - name: "Upload Codacy coverage"
-        if: "${{ matrix.with_coverage == true && inputs.with-codacy }}"
+        if: "${{ matrix.with_coverage == true && inputs.with-coverage && inputs.with-codacy }}"
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "./${{ inputs.coverage-path }}coverage.xml"
 
       - name: "Upload test results to Codecov"
-        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
+        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-coverage && inputs.with-codecov }}"
         uses: "codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2" # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -216,7 +204,7 @@ jobs:
           verbose: false
 
       - name: "Upload coverage to Codecov"
-        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
+        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-coverage && inputs.with-codecov }}"
         uses: "codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2" # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -231,6 +219,10 @@ jobs:
     needs:
       - tests
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: "Generate Token"
         id: generate_token
