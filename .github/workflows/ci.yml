@@ -9,8 +9,9 @@ on:
         description: >-
           JSON array of test matrix entries. Each entry must define
           `php-version` (string), `dependencies` (locked|highest|lowest),
-          and `with_coverage` (boolean; requires `with-coverage: true` to
-          actually run coverage). Override to add, drop, or reorder rows.
+          and `with_coverage` (boolean; set true on exactly one row to
+          collect and upload coverage from that row). Override to add,
+          drop, or reorder rows.
         default: |
           [
             {"php-version": "8.3", "dependencies": "locked",  "with_coverage": true},
@@ -19,7 +20,7 @@ on:
           ]
         type: string
       with-coverage:
-        description: "Master switch for coverage. When true, matrix rows with with_coverage=true will collect and upload coverage."
+        description: "Deprecated, kept for migration only. Coverage is now controlled per matrix row via `test-matrix[].with_coverage`."
         default: false
         type: boolean
       coverage-path:
@@ -137,7 +138,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f" # 2.37.0
         with:
-          coverage: "${{ (matrix.with_coverage == true && inputs.with-coverage) && 'pcov' || 'none' }}"
+          coverage: "${{ matrix.with_coverage == true && 'pcov' || 'none' }}"
           ini-values: display_errors=On, display_startup_errors=On, error_reporting=32767
           php-version: "${{ matrix.php-version }}"
 
@@ -166,19 +167,19 @@ jobs:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance') && matrix.dependencies == 'locked') && 'highest' || matrix.dependencies }}"
 
       - name: "Run Tests (coverage)"
-        if: "${{ matrix.with_coverage == true && inputs.with-coverage }}"
+        if: "${{ matrix.with_coverage == true }}"
         run: |
           vendor/bin/codecept build
           vendor/bin/codecept run --coverage --coverage-xml=coverage.xml --xml --report
 
       - name: "Run Tests"
-        if: "${{ !(matrix.with_coverage == true && inputs.with-coverage) }}"
+        if: "${{ matrix.with_coverage != true }}"
         run: |
           vendor/bin/codecept build
           vendor/bin/codecept run --xml --report
 
       - name: "Upload coverage artifact"
-        if: "${{ matrix.with_coverage == true && inputs.with-coverage }}"
+        if: "${{ matrix.with_coverage == true }}"
         uses: "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f" # v7.0.0
         with:
           name: code-coverage-results
@@ -186,14 +187,14 @@ jobs:
           retention-days: 5
 
       - name: "Upload Codacy coverage"
-        if: "${{ matrix.with_coverage == true && inputs.with-coverage && inputs.with-codacy }}"
+        if: "${{ matrix.with_coverage == true && inputs.with-codacy }}"
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "./${{ inputs.coverage-path }}coverage.xml"
 
       - name: "Upload test results to Codecov"
-        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-coverage && inputs.with-codecov }}"
+        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
         uses: "codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2" # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -204,7 +205,7 @@ jobs:
           verbose: false
 
       - name: "Upload coverage to Codecov"
-        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-coverage && inputs.with-codecov }}"
+        if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
         uses: "codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2" # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
