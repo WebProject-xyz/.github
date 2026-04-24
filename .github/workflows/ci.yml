@@ -220,10 +220,7 @@ jobs:
     needs:
       - tests
     runs-on: "ubuntu-latest"
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+    permissions: {}
     steps:
       - name: "Generate Token"
         id: generate_token
