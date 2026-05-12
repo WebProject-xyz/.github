@@ -52,7 +52,7 @@ jobs:
   qa:
     name: "QA (lint + static analysis)"
     if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
-    runs-on: "ubuntu-latest"
+    runs-on: "blacksmith-4vcpu-ubuntu-2404"
     permissions:
       contents: read
     env:
@@ -101,7 +101,7 @@ jobs:
   codacy:
     name: "Codacy Security Scan"
     if: "${{ inputs.with-codacy && !startsWith(github.event.head_commit.message, 'chore(release)') }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "blacksmith-4vcpu-ubuntu-2404"
     permissions:
       contents: read
       security-events: write
@@ -124,7 +124,7 @@ jobs:
   tests:
     name: "Tests (PHP ${{ matrix.php-version }}, ${{ matrix.dependencies }})"
     needs: [qa]
-    runs-on: "ubuntu-latest"
+    runs-on: "blacksmith-4vcpu-ubuntu-2404"
     permissions:
       contents: read
     strategy:
@@ -219,7 +219,7 @@ jobs:
     if: "${{ inputs.with-release && github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'chore(release)') }}"
     needs:
       - tests
-    runs-on: "ubuntu-latest"
+    runs-on: "blacksmith-4vcpu-ubuntu-2404"
     permissions: {}
     steps:
       - name: "Generate Token"
