@@ -5,6 +5,14 @@ on:
         description: "PHP version for the QA job (lint + static analysis)"
         default: "8.3"
         type: string
+      php-extensions:
+        description: >-
+          Comma-separated extensions for setup-php. Runner images can ship
+          stale preinstalled extensions (e.g. ext-redis 5.3.7, conflicts with
+          symfony/cache >=7.4.13); setup-php only replaces an already enabled
+          extension when a version is pinned, e.g. `redis-6.3.0`.
+        default: "redis-6.3.0"
+        type: string
       test-matrix:
         description: >-
           JSON array of test matrix entries. Each entry must define
@@ -61,10 +69,28 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10" # v6.0.3
 
+      - name: "Setup extension cache environment"
+        if: "${{ inputs.php-extensions != '' }}"
+        id: "extcache"
+        uses: "shivammathur/cache-extensions@9b476298b44f2e4d4268dd103ff4c3e216314e27" # 1.14.6
+        with:
+          php-version: "${{ inputs.php-version }}"
+          extensions: "${{ inputs.php-extensions }}"
+          key: "php-ext-cache-v1"
+
+      - name: "Cache PHP extensions"
+        if: "${{ inputs.php-extensions != '' }}"
+        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        with:
+          path: "${{ steps.extcache.outputs.dir }}"
+          key: "${{ steps.extcache.outputs.key }}"
+          restore-keys: "${{ steps.extcache.outputs.key }}"
+
       - name: "Install PHP"
         uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
           coverage: "none"
+          extensions: "${{ inputs.php-extensions }}"
           php-version: "${{ inputs.php-version }}"
 
       - name: "Validate composer.json and composer.lock"
@@ -135,10 +161,28 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10" # v6.0.3
 
+      - name: "Setup extension cache environment"
+        if: "${{ inputs.php-extensions != '' }}"
+        id: "extcache"
+        uses: "shivammathur/cache-extensions@9b476298b44f2e4d4268dd103ff4c3e216314e27" # 1.14.6
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "${{ inputs.php-extensions }}"
+          key: "php-ext-cache-v1"
+
+      - name: "Cache PHP extensions"
+        if: "${{ inputs.php-extensions != '' }}"
+        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        with:
+          path: "${{ steps.extcache.outputs.dir }}"
+          key: "${{ steps.extcache.outputs.key }}"
+          restore-keys: "${{ steps.extcache.outputs.key }}"
+
       - name: "Install PHP"
         uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
           coverage: "${{ matrix.with_coverage == true && 'pcov' || 'none' }}"
+          extensions: "${{ inputs.php-extensions }}"
           ini-values: display_errors=On, display_startup_errors=On, error_reporting=32767
           php-version: "${{ matrix.php-version }}"
 
