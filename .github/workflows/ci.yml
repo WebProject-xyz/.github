@@ -80,7 +80,7 @@ jobs:
 
       - name: "Cache PHP extensions"
         if: "${{ inputs.php-extensions != '' }}"
-        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        uses: "actions/cache@caa296126883cff596d87d8935842f9db880ef25" # v5.1.0
         with:
           path: "${{ steps.extcache.outputs.dir }}"
           key: "${{ steps.extcache.outputs.key }}"
@@ -101,7 +101,7 @@ jobs:
         uses: "ergebnis/.github/actions/composer/determine-cache-directory@9785f99b3546d64df9cb331449e7fcdc41885d25" # 1.11.0
 
       - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        uses: "actions/cache@caa296126883cff596d87d8935842f9db880ef25" # v5.1.0
         with:
           path: "${{ env.COMPOSER_CACHE_DIR }}"
           key: "php-${{ inputs.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
@@ -172,7 +172,7 @@ jobs:
 
       - name: "Cache PHP extensions"
         if: "${{ inputs.php-extensions != '' }}"
-        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        uses: "actions/cache@caa296126883cff596d87d8935842f9db880ef25" # v5.1.0
         with:
           path: "${{ steps.extcache.outputs.dir }}"
           key: "${{ steps.extcache.outputs.key }}"
@@ -196,7 +196,7 @@ jobs:
         uses: "ergebnis/.github/actions/composer/determine-cache-directory@9785f99b3546d64df9cb331449e7fcdc41885d25" # 1.11.0
 
       - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae" # v5.0.5
+        uses: "actions/cache@caa296126883cff596d87d8935842f9db880ef25" # v5.1.0
         with:
           path: "${{ env.COMPOSER_CACHE_DIR }}"
           key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
