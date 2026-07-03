@@ -8,7 +8,6 @@
   "extends": [
     ":dependencyDashboard",
     ":ignoreModulesAndTests",
-    ":automergeMinor",
     ":separateMajorReleases",
     ":combinePatchMinorReleases",
     ":enableVulnerabilityAlerts",
@@ -58,9 +57,11 @@
       "automerge": true
     },
     {
-      "description": "Group all GitHub Action updates including major (no review required)",
+      "description": "Group all CI/infra updates (GitHub Actions + Docker digests) into one PR (no review required)",
       "matchManagers": [
-        "github-actions"
+        "github-actions",
+        "dockerfile",
+        "docker-compose"
       ],
       "matchUpdateTypes": [
         "major",
@@ -69,39 +70,43 @@
         "pin",
         "digest"
       ],
-      "groupName": "GitHub Actions",
-      "automerge": true,
-      "assignees": []
-    },
-    {
-      "description": "Pin digest updates (no review required)",
-      "matchUpdateTypes": [
-        "pin",
-        "digest"
-      ],
+      "groupName": "ci-and-docker",
       "automerge": true,
       "assignees": []
     },
     {
       "description": "Group PHP development tools",
-      "matchPackagePatterns": [
-        "phpunit/",
-        "phpstan/",
-        "codeception/"
+      "matchPackageNames": [
+        "phpunit/**",
+        "phpstan/**",
+        "codeception/**"
       ],
       "groupName": "PHP Dev Tools"
     },
     {
-      "description": "Symfony minor/major: widen range for forward compatibility (e.g. ^7.4 || ^8.0)",
-      "matchPackagePatterns": [
-        "symfony/"
+      "description": "Symfony minor: widen range for forward compatibility and automerge without review",
+      "matchPackageNames": [
+        "symfony/**"
       ],
       "matchUpdateTypes": [
-        "minor",
-        "major"
+        "minor"
       ],
       "groupSlug": "symfony",
       "groupName": "Symfony Packages",
+      "rangeStrategy": "widen",
+      "automerge": true,
+      "assignees": []
+    },
+    {
+      "description": "Symfony major: widen range, manual review required",
+      "matchPackageNames": [
+        "symfony/**"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupSlug": "symfony-major",
+      "groupName": "Symfony Packages (major)",
       "rangeStrategy": "widen",
       "automerge": false,
       "extends": [
@@ -110,8 +115,8 @@
     },
     {
       "description": "Symfony patch updates: automerge without review",
-      "matchPackagePatterns": [
-        "symfony/"
+      "matchPackageNames": [
+        "symfony/**"
       ],
       "matchUpdateTypes": [
         "patch"
@@ -122,6 +127,7 @@
       "assignees": []
     },
     {
+      "description": "PHP runtime: manual review required (runtime constraint)",
       "matchDepNames": [
         "php"
       ],
