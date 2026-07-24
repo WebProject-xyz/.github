@@ -38,12 +38,12 @@
   "rangeStrategy": "replace",
   "rollbackPrs": true,
   "pinDigests": true,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "1 day",
   "composer": {
     "composerIgnorePlatformReqs": false
   },
   "constraints": {
-    "php": "~8.3.0 || ~8.4.0"
+    "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
   },
   "packageRules": [
     {
@@ -131,7 +131,7 @@
       "matchDepNames": [
         "php"
       ],
-      "allowedVersions": "~8.3.0 || ~8.4.0",
+      "allowedVersions": "~8.3.0 || ~8.4.0 || ~8.5.0",
       "automerge": false,
       "ignoreUnstable": false,
       "groupName": "PHP",
