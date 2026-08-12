@@ -72,7 +72,7 @@ jobs:
       - name: "Setup extension cache environment"
         if: "${{ inputs.php-extensions != '' }}"
         id: "extcache"
-        uses: "shivammathur/cache-extensions@9b476298b44f2e4d4268dd103ff4c3e216314e27" # 1.14.6
+        uses: "shivammathur/cache-extensions@50000e7030dd3fa176964a8fbbbd9e4b560fe4d4" # 1.15.0
         with:
           php-version: "${{ inputs.php-version }}"
           extensions: "${{ inputs.php-extensions }}"
@@ -98,7 +98,7 @@ jobs:
         run: "composer validate --ansi --strict"
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@04b5426bcc1ce207abf7bea5f5dabb15dd65786a" # 1.12.0
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@fa753ba19f89b4923380b19dfcd80ad7eca4def9" # 1.13.0
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -111,7 +111,7 @@ jobs:
             php-${{ inputs.php-version }}-composer-main
 
       - name: "Install locked dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@04b5426bcc1ce207abf7bea5f5dabb15dd65786a" # 1.12.0
+        uses: "ergebnis/.github/actions/composer/install@fa753ba19f89b4923380b19dfcd80ad7eca4def9" # 1.13.0
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance')) && 'highest' || 'locked' }}"
 
@@ -164,7 +164,7 @@ jobs:
       - name: "Setup extension cache environment"
         if: "${{ inputs.php-extensions != '' }}"
         id: "extcache"
-        uses: "shivammathur/cache-extensions@9b476298b44f2e4d4268dd103ff4c3e216314e27" # 1.14.6
+        uses: "shivammathur/cache-extensions@50000e7030dd3fa176964a8fbbbd9e4b560fe4d4" # 1.15.0
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "${{ inputs.php-extensions }}"
@@ -193,7 +193,7 @@ jobs:
         run: "echo \"::add-matcher::${{ runner.tool_cache }}/phpunit.json\""
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@04b5426bcc1ce207abf7bea5f5dabb15dd65786a" # 1.12.0
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@fa753ba19f89b4923380b19dfcd80ad7eca4def9" # 1.13.0
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -206,7 +206,7 @@ jobs:
             php-${{ matrix.php-version }}-composer-main
 
       - name: "Install ${{ matrix.dependencies }} dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@04b5426bcc1ce207abf7bea5f5dabb15dd65786a" # 1.12.0
+        uses: "ergebnis/.github/actions/composer/install@fa753ba19f89b4923380b19dfcd80ad7eca4def9" # 1.13.0
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance') && matrix.dependencies == 'locked') && 'highest' || matrix.dependencies }}"
 
