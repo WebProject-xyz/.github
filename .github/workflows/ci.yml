@@ -72,7 +72,7 @@ jobs:
       - name: "Setup extension cache environment"
         if: "${{ inputs.php-extensions != '' }}"
         id: "extcache"
-        uses: "shivammathur/cache-extensions@de3c642a5fce0ef91581a1c9831e229f525196d6" # 1.15.1
+        uses: "shivammathur/cache-extensions@22e24453af1bf3851994136f122ce065ab828a74" # 1.15.2
         with:
           php-version: "${{ inputs.php-version }}"
           extensions: "${{ inputs.php-extensions }}"
@@ -98,7 +98,7 @@ jobs:
         run: "composer validate --ansi --strict"
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@07ba5718eac189644381e5972cd671c80c135ae7" # 1.13.4
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@32cb0efd4ea19f657c4bcedf1129361d0b730c3c" # 1.14.0
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -111,7 +111,7 @@ jobs:
             php-${{ inputs.php-version }}-composer-main
 
       - name: "Install locked dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@07ba5718eac189644381e5972cd671c80c135ae7" # 1.13.4
+        uses: "ergebnis/.github/actions/composer/install@32cb0efd4ea19f657c4bcedf1129361d0b730c3c" # 1.14.0
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance')) && 'highest' || 'locked' }}"
 
@@ -164,7 +164,7 @@ jobs:
       - name: "Setup extension cache environment"
         if: "${{ inputs.php-extensions != '' }}"
         id: "extcache"
-        uses: "shivammathur/cache-extensions@de3c642a5fce0ef91581a1c9831e229f525196d6" # 1.15.1
+        uses: "shivammathur/cache-extensions@22e24453af1bf3851994136f122ce065ab828a74" # 1.15.2
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "${{ inputs.php-extensions }}"
@@ -193,7 +193,7 @@ jobs:
         run: "echo \"::add-matcher::${{ runner.tool_cache }}/phpunit.json\""
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@07ba5718eac189644381e5972cd671c80c135ae7" # 1.13.4
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@32cb0efd4ea19f657c4bcedf1129361d0b730c3c" # 1.14.0
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -206,7 +206,7 @@ jobs:
             php-${{ matrix.php-version }}-composer-main
 
       - name: "Install ${{ matrix.dependencies }} dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@07ba5718eac189644381e5972cd671c80c135ae7" # 1.13.4
+        uses: "ergebnis/.github/actions/composer/install@32cb0efd4ea19f657c4bcedf1129361d0b730c3c" # 1.14.0
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance') && matrix.dependencies == 'locked') && 'highest' || matrix.dependencies }}"
 
@@ -239,7 +239,7 @@ jobs:
 
       - name: "Upload test results to Codecov"
         if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
-        uses: "codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f" # v7
+        uses: "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5" # v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "./${{ inputs.coverage-path }}report.xml"
@@ -250,7 +250,7 @@ jobs:
 
       - name: "Upload coverage to Codecov"
         if: "${{ !cancelled() && matrix.with_coverage == true && inputs.with-codecov }}"
-        uses: "codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f" # v7
+        uses: "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5" # v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "./${{ inputs.coverage-path }}coverage.xml"
