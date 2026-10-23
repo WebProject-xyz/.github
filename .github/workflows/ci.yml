@@ -295,6 +295,6 @@ jobs:
             @semantic-release/github
             @semantic-release/changelog
             @semantic-release/git
-            conventional-changelog-conventionalcommits
+            conventional-changelog-conventionalcommits@^8.0.0
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
