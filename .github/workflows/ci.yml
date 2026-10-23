@@ -88,6 +88,8 @@ jobs:
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
+        env:
+          update: true
         with:
           coverage: "none"
           extensions: "${{ inputs.php-extensions }}"
@@ -180,6 +182,8 @@ jobs:
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
+        env:
+          update: true
         with:
           coverage: "${{ matrix.with_coverage == true && 'pcov' || 'none' }}"
           extensions: "${{ inputs.php-extensions }}"
