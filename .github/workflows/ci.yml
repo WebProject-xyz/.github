@@ -104,7 +104,7 @@ jobs:
         run: "composer validate --ansi --strict"
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@4a1908a951ce901345ab99b4fcc820a6e775a512" # 1.17.0
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@005d2a20cf85a212b5dfef28bed2f341addcf000" # 1.17.1
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -116,7 +116,7 @@ jobs:
             php-${{ inputs.php-version }}-composer-
 
       - name: "Install locked dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@4a1908a951ce901345ab99b4fcc820a6e775a512" # 1.17.0
+        uses: "ergebnis/.github/actions/composer/install@005d2a20cf85a212b5dfef28bed2f341addcf000" # 1.17.1
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance')) && 'highest' || 'locked' }}"
 
@@ -215,7 +215,7 @@ jobs:
         run: "echo \"::add-matcher::${{ runner.tool_cache }}/phpunit.json\""
 
       - name: "Determine composer cache directory"
-        uses: "ergebnis/.github/actions/composer/determine-cache-directory@4a1908a951ce901345ab99b4fcc820a6e775a512" # 1.17.0
+        uses: "ergebnis/.github/actions/composer/determine-cache-directory@005d2a20cf85a212b5dfef28bed2f341addcf000" # 1.17.1
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" # v6.1.0
@@ -227,7 +227,7 @@ jobs:
             php-${{ matrix.php-version }}-composer-
 
       - name: "Install ${{ matrix.dependencies }} dependencies with composer"
-        uses: "ergebnis/.github/actions/composer/install@4a1908a951ce901345ab99b4fcc820a6e775a512" # 1.17.0
+        uses: "ergebnis/.github/actions/composer/install@005d2a20cf85a212b5dfef28bed2f341addcf000" # 1.17.1
         with:
           dependencies: "${{ (github.actor == 'renovate[bot]' && !contains(github.head_ref, 'lock-file-maintenance') && matrix.dependencies == 'locked') && 'highest' || matrix.dependencies }}"
 
@@ -290,7 +290,7 @@ jobs:
     steps:
       - name: "Generate Token"
         id: generate_token
-        uses: "actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510" # v3
+        uses: "actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc" # v3
         with:
           client-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
